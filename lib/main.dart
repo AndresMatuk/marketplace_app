@@ -1,8 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
+import 'presentation/routes/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,18 +24,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Marketplace App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Firebase conectado correctamente'),
-        ),
-      ),
+      routerConfig: appRouter,
     );
   }
 }

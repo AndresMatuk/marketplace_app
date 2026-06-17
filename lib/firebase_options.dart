@@ -57,22 +57,22 @@ class DefaultFirebaseOptions {
     projectId: 'marketplace-app-a9156',
     storageBucket: 'marketplace-app-a9156.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCbNsIkodQuk4txIkUk1-gl0opm2x1rDHA',
     appId: '1:2037911947:ios:14c3056b5976d0e3b2df8e',
     messagingSenderId: '2037911947',
     projectId: 'marketplace-app-a9156',
     storageBucket: 'marketplace-app-a9156.firebasestorage.app',
+    iosClientId: '2037911947-odakcef9cb6tgrbt4psrqvbknbjd2d1v.apps.googleusercontent.com',
     iosBundleId: 'com.example.marketplaceApp',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCbNsIkodQuk4txIkUk1-gl0opm2x1rDHA',
     appId: '1:2037911947:ios:14c3056b5976d0e3b2df8e',
     messagingSenderId: '2037911947',
     projectId: 'marketplace-app-a9156',
     storageBucket: 'marketplace-app-a9156.firebasestorage.app',
+    iosClientId: '2037911947-odakcef9cb6tgrbt4psrqvbknbjd2d1v.apps.googleusercontent.com',
     iosBundleId: 'com.example.marketplaceApp',
   );
 
