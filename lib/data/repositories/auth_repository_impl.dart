@@ -1,116 +1,116 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
+import '../models/user_model.dart';
 
+/// Implementación del repositorio de autenticación.
+///
+/// Responsabilidades:
+/// - Traducir modelos de datos a entidades de dominio.
+/// - Orquestar Firebase Auth + Firestore en operaciones compuestas.
+/// - Propagar excepciones de Firebase sin transformarlas.
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource remoteDataSource;
-
   AuthRepositoryImpl({
     required this.remoteDataSource,
   });
 
+  final AuthRemoteDataSource remoteDataSource;
+
   @override
   Stream<AppUser?> authStateChanges() {
     return remoteDataSource.authStateChanges().asyncMap(
-      (user) async {
-        if (user == null) return null;
+      (firebaseUser) async {
+        if (firebaseUser == null) {
+          return null;
+        }
 
-        return getCurrentUser();
+        return _mapFirebaseUserToAppUser(firebaseUser);
       },
     );
   }
 
   @override
   Future<AppUser?> getCurrentUser() async {
-    final currentUser =
-        FirebaseAuth.instance.currentUser;
+    final firebaseUser = remoteDataSource.currentUser;
 
-    if (currentUser == null) {
+    if (firebaseUser == null) {
       return null;
     }
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser.uid)
-        .get();
-
-    if (!doc.exists) {
-      return null;
-    }
-
-    final data = doc.data()!;
-
-    return AppUser(
-      uid: data['uid'] ?? '',
-      name: data['name'] ?? '',
-      email: data['email'] ?? '',
-      role: data['role'] ?? 'customer',
-      photoUrl: data['photoUrl'] ?? '',
-    );
+    return _mapFirebaseUserToAppUser(firebaseUser);
   }
 
   @override
   Future<void> signIn({
     required String email,
     required String password,
-  }) async {
-    await remoteDataSource.signIn(
+  }) {
+    return remoteDataSource.signIn(
       email: email,
       password: password,
     );
   }
 
- @override
-Future<void> signUp({
-  required String name,
-  required String email,
-  required String password,
-}) async {
+  @override
+  Future<void> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    final credential = await remoteDataSource.signUp(
+      email: email,
+      password: password,
+    );
 
-  print('PASO 1');
+    final firebaseUser = credential.user;
+    if (firebaseUser == null) {
+      throw StateError('Firebase Auth no retornó un usuario tras el registro.');
+    }
 
-  final credential =
-      await remoteDataSource.signUp(
-    email: email,
-    password: password,
-  );
+    try {
+      await remoteDataSource.updateDisplayName(
+        user: firebaseUser,
+        name: name,
+      );
 
-  print('PASO 2');
+      final userModel = UserModel(
+        uid: firebaseUser.uid,
+        name: name.trim(),
+        email: email.trim(),
+        role: 'customer',
+        photoUrl: '',
+      );
 
-  await FirebaseFirestore.instance
-      .collection('users')
-      .doc(credential.user!.uid)
-      .set({
-    'uid': credential.user!.uid,
-    'name': name,
-    'email': email,
-    'role': 'customer',
-    'photoUrl': '',
-    'createdAt': FieldValue.serverTimestamp(),
-  });
-
-  print('PASO 3');
-}
+      await remoteDataSource.createUserDocument(userModel);
+    } catch (error) {
+      await remoteDataSource.deleteUser(firebaseUser);
+      rethrow;
+    }
+  }
 
   @override
-  Future<void> signOut() async {
-    await remoteDataSource.signOut();
+  Future<void> signOut() {
+    return remoteDataSource.signOut();
   }
 
   @override
   Future<void> resetPassword({
     required String email,
-  }) async {
-    await remoteDataSource.resetPassword(
-      email: email,
-    );
+  }) {
+    return remoteDataSource.resetPassword(email: email);
   }
 
   @override
-  Future<void> signInWithGoogle() async {
-    throw UnimplementedError();
+  Future<void> signInWithGoogle() {
+    return remoteDataSource.signInWithGoogle();
+  }
+
+  Future<AppUser?> _mapFirebaseUserToAppUser(User firebaseUser) async {
+    final userModel =
+        await remoteDataSource.getUserDocument(firebaseUser.uid);
+
+    return userModel?.toEntity();
   }
 }

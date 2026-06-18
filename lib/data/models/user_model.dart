@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../domain/entities/app_user.dart';
+
 class UserModel {
   final String uid;
   final String name;
@@ -19,12 +21,12 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      uid: map['uid'] ?? '',
-      name: map['name'] ?? '',
-      email: map['email'] ?? '',
-      role: map['role'] ?? 'customer',
-      photoUrl: map['photoUrl'] ?? '',
-      createdAt: map['createdAt'],
+      uid: map['uid'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      email: map['email'] as String? ?? '',
+      role: map['role'] as String? ?? 'customer',
+      photoUrl: map['photoUrl'] as String? ?? '',
+      createdAt: map['createdAt'] as Timestamp?,
     );
   }
 
@@ -37,6 +39,16 @@ class UserModel {
       'photoUrl': photoUrl,
       'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
+  }
+
+  AppUser toEntity() {
+    return AppUser(
+      uid: uid,
+      name: name,
+      email: email,
+      role: role,
+      photoUrl: photoUrl,
+    );
   }
 
   UserModel copyWith({
