@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,6 +12,21 @@ Future<void> main() async {
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  final app = Firebase.app();
+
+  debugPrint('========== FIREBASE CONFIG ==========');
+  debugPrint('App Name: ${app.name}');
+  debugPrint('Project ID: ${app.options.projectId}');
+  debugPrint('App ID: ${app.options.appId}');
+  debugPrint('API Key: ${app.options.apiKey}');
+  debugPrint('Storage Bucket: ${app.options.storageBucket}');
+  debugPrint('====================================');
+
+  debugPrint(
+    'Firestore Project ID: '
+    '${FirebaseFirestore.instance.app.options.projectId}',
   );
 
   runApp(
