@@ -233,7 +233,7 @@ class _AuthRouterRefresh extends ChangeNotifier {
   _AuthRouterRefresh(this._ref) {
     _subscription = _ref.listen<AuthState>(
       authNotifierProvider,
-      (_, __) => notifyListeners(),
+      (_, _) => notifyListeners()
     );
   }
 
