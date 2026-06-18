@@ -19,11 +19,21 @@ class AuthRepositoryImpl implements AuthRepository {
 
   final AuthRemoteDataSource remoteDataSource;
 
+  bool _signUpInProgress = false;
+
   @override
   Stream<AppUser?> authStateChanges() {
     return remoteDataSource.authStateChanges().asyncMap(
       (firebaseUser) async {
         if (firebaseUser == null) {
+          return null;
+        }
+
+        if (_signUpInProgress) {
+          debugPrint(
+            '[AuthRepositoryImpl] authStateChanges skipped getUserDocument '
+            '| uid=${firebaseUser.uid} signUpInProgress=true',
+          );
           return null;
         }
 
@@ -60,88 +70,94 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) async {
+    _signUpInProgress = true;
+
     debugPrint(
       '[AuthRepositoryImpl] signUp BEFORE createUserWithEmailAndPassword | '
       'email=$email',
     );
 
-    final credential = await remoteDataSource.signUp(
-      email: email,
-      password: password,
-    );
-
-    final firebaseUser = credential.user;
-
-    debugPrint(
-      '[AuthRepositoryImpl] signUp AFTER createUserWithEmailAndPassword | '
-      'uid=${firebaseUser?.uid} email=${firebaseUser?.email ?? email}',
-    );
-
-    if (firebaseUser == null) {
-      throw StateError('Firebase Auth no retornó un usuario tras el registro.');
-    }
-
     try {
-      debugPrint(
-        '[AuthRepositoryImpl] signUp BEFORE updateDisplayName | '
-        'uid=${firebaseUser.uid} email=${firebaseUser.email}',
+      final credential = await remoteDataSource.signUp(
+        email: email,
+        password: password,
       );
 
-      await remoteDataSource.updateDisplayName(
-        user: firebaseUser,
-        name: name,
-      );
+      final firebaseUser = credential.user;
 
       debugPrint(
-        '[AuthRepositoryImpl] signUp AFTER updateDisplayName | '
-        'uid=${firebaseUser.uid}',
+        '[AuthRepositoryImpl] signUp AFTER createUserWithEmailAndPassword | '
+        'uid=${firebaseUser?.uid} email=${firebaseUser?.email ?? email}',
       );
 
-      final userModel = UserModel(
-        uid: firebaseUser.uid,
-        name: name.trim(),
-        email: email.trim(),
-        role: 'customer',
-        photoUrl: '',
-      );
-
-      debugPrint(
-        '[AuthRepositoryImpl] signUp BEFORE createUserDocument | '
-        'uid=${firebaseUser.uid} email=${userModel.email}',
-      );
-
-      await remoteDataSource.createUserDocument(userModel);
-
-      debugPrint(
-        '[AuthRepositoryImpl] signUp AFTER createUserDocument | '
-        'uid=${firebaseUser.uid}',
-      );
-    } catch (error, stackTrace) {
-      debugPrint(
-        '[AuthRepositoryImpl] signUp ERROR before rollback | '
-        'uid=${firebaseUser.uid} email=${firebaseUser.email} '
-        'error=$error stackTrace=$stackTrace',
-      );
-
-      debugPrint(
-        '[AuthRepositoryImpl] signUp BEFORE deleteUser | uid=${firebaseUser.uid}',
-      );
-
-      try {
-        await remoteDataSource.deleteUser(firebaseUser);
-
-        debugPrint(
-          '[AuthRepositoryImpl] signUp AFTER deleteUser | uid=${firebaseUser.uid}',
-        );
-      } catch (rollbackError, rollbackStackTrace) {
-        debugPrint(
-          '[AuthRepositoryImpl] signUp rollback deleteUser FAILED | '
-          'uid=${firebaseUser.uid} rollbackError=$rollbackError '
-          'rollbackStackTrace=$rollbackStackTrace',
-        );
+      if (firebaseUser == null) {
+        throw StateError('Firebase Auth no retornó un usuario tras el registro.');
       }
 
-      Error.throwWithStackTrace(error, stackTrace);
+      try {
+        debugPrint(
+          '[AuthRepositoryImpl] signUp BEFORE updateDisplayName | '
+          'uid=${firebaseUser.uid} email=${firebaseUser.email}',
+        );
+
+        await remoteDataSource.updateDisplayName(
+          user: firebaseUser,
+          name: name,
+        );
+
+        debugPrint(
+          '[AuthRepositoryImpl] signUp AFTER updateDisplayName | '
+          'uid=${firebaseUser.uid}',
+        );
+
+        final userModel = UserModel(
+          uid: firebaseUser.uid,
+          name: name.trim(),
+          email: email.trim(),
+          role: 'customer',
+          photoUrl: '',
+        );
+
+        debugPrint(
+          '[AuthRepositoryImpl] signUp BEFORE createUserDocument | '
+          'uid=${firebaseUser.uid} email=${userModel.email}',
+        );
+
+        await remoteDataSource.createUserDocument(userModel);
+
+        debugPrint(
+          '[AuthRepositoryImpl] signUp AFTER createUserDocument | '
+          'uid=${firebaseUser.uid}',
+        );
+      } catch (error, stackTrace) {
+        debugPrint(
+          '[AuthRepositoryImpl] signUp ERROR before rollback | '
+          'uid=${firebaseUser.uid} email=${firebaseUser.email} '
+          'error=$error stackTrace=$stackTrace',
+        );
+
+        debugPrint(
+          '[AuthRepositoryImpl] signUp BEFORE deleteUser | uid=${firebaseUser.uid}',
+        );
+
+        try {
+          await remoteDataSource.deleteUser(firebaseUser);
+
+          debugPrint(
+            '[AuthRepositoryImpl] signUp AFTER deleteUser | uid=${firebaseUser.uid}',
+          );
+        } catch (rollbackError, rollbackStackTrace) {
+          debugPrint(
+            '[AuthRepositoryImpl] signUp rollback deleteUser FAILED | '
+            'uid=${firebaseUser.uid} rollbackError=$rollbackError '
+            'rollbackStackTrace=$rollbackStackTrace',
+          );
+        }
+
+        Error.throwWithStackTrace(error, stackTrace);
+      }
+    } finally {
+      _signUpInProgress = false;
     }
   }
 

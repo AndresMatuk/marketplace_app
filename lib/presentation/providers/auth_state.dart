@@ -43,6 +43,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this._repository) : super(const AuthInitial()) {
     _authSubscription = _repository.authStateChanges().listen(
       (user) {
+        if (_manualAuthFlowInProgress) {
+          debugPrint(
+            '[AuthNotifier] authStateChanges ignored | manualAuthFlow=true',
+          );
+          return;
+        }
+
         if (user != null) {
           state = AuthAuthenticated(user);
         } else if (state is! AuthLoading) {
@@ -56,6 +63,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   final AuthRepository _repository;
   StreamSubscription<AppUser?>? _authSubscription;
+  bool _manualAuthFlowInProgress = false;
 
   Future<void> loadCurrentUser() async {
     if (state is! AuthAuthenticated) {
@@ -110,6 +118,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String email,
     required String password,
   }) async {
+    _manualAuthFlowInProgress = true;
     state = const AuthLoading();
 
     try {
@@ -136,6 +145,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         message: AuthErrorMapper.map(error),
         previous: const AuthUnauthenticated(),
       );
+    } finally {
+      _manualAuthFlowInProgress = false;
     }
   }
 
