@@ -156,9 +156,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final orderId = state.pathParameters['id']!;
           return OrderConfirmationScreen(
             orderId: orderId,
-            onViewOrderDetailTap: () => context.goNamed(
+            onViewOrderDetailTap: () => context.pushNamed(
               RouteNames.customerOrderDetail,
               pathParameters: {'id': orderId},
+              queryParameters: const {'from': 'confirmation'},
             ),
             onViewOrdersTap: () => context.goNamed(RouteNames.customerOrders),
             onBackToCatalogTap: () =>
@@ -171,9 +172,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.customerOrderDetail,
         builder: (context, state) {
           final orderId = state.pathParameters['id']!;
+          final openedFromConfirmation =
+              state.uri.queryParameters['from'] == 'confirmation';
+
           return OrderDetailScreen(
             orderId: orderId,
-            onBackTap: () => context.pop(),
+            onBackTap: () {
+              if (openedFromConfirmation) {
+                context.goNamed(RouteNames.customerOrders);
+                return;
+              }
+
+              context.pop();
+            },
           );
         },
       ),
