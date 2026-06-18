@@ -174,6 +174,8 @@ class CheckoutNotifier extends AutoDisposeNotifier<CheckoutState> {
 
       final order = await orderRepository.createOrder(
         customerId: user.uid,
+        customerName: user.name,
+        customerEmail: user.email,
         lines: lines,
       );
 

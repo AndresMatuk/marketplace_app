@@ -63,6 +63,9 @@ class OrderItemModel {
 class OrderModel {
   final String id;
   final String customerId;
+  final String customerName;
+  final String customerEmail;
+  final List<String> sellerIds;
   final List<OrderItemModel> items;
   final double subtotal;
   final double total;
@@ -73,6 +76,9 @@ class OrderModel {
   const OrderModel({
     required this.id,
     required this.customerId,
+    this.customerName = '',
+    this.customerEmail = '',
+    this.sellerIds = const [],
     required this.items,
     required this.subtotal,
     required this.total,
@@ -90,6 +96,11 @@ class OrderModel {
     return OrderModel(
       id: id,
       customerId: map['customerId'] as String? ?? '',
+      customerName: map['customerName'] as String? ?? '',
+      customerEmail: map['customerEmail'] as String? ?? '',
+      sellerIds: (map['sellerIds'] as List<dynamic>? ?? [])
+          .map((id) => id as String)
+          .toList(),
       items: rawItems
           .map(
             (item) => OrderItemModel.fromMap(
@@ -108,6 +119,9 @@ class OrderModel {
   Map<String, dynamic> toMap() {
     return {
       'customerId': customerId,
+      'customerName': customerName,
+      'customerEmail': customerEmail,
+      'sellerIds': sellerIds,
       'items': items.map((item) => item.toMap()).toList(),
       'subtotal': subtotal,
       'total': total,
@@ -121,6 +135,9 @@ class OrderModel {
     return Order(
       id: id,
       customerId: customerId,
+      customerName: customerName,
+      customerEmail: customerEmail,
+      sellerIds: sellerIds,
       items: items.map((item) => item.toEntity()).toList(),
       subtotal: subtotal,
       total: total,

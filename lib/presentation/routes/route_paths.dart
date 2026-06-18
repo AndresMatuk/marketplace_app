@@ -16,6 +16,7 @@ class RoutePaths {
       '/customer/orders/:id/confirmation';
   static const String sellerHome = '/seller/home';
   static const String sellerProducts = '/seller/products';
+  static const String sellerSales = '/seller/sales';
   static const String sellerProductCreate = '/seller/products/new';
   static const String sellerProductEdit = '/seller/products/:id/edit';
   static const String adminHome = '/admin/home';

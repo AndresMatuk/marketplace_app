@@ -15,6 +15,7 @@ class RouteNames {
   static const String customerOrderConfirmation = 'customerOrderConfirmation';
   static const String sellerHome = 'sellerHome';
   static const String sellerProducts = 'sellerProducts';
+  static const String sellerSales = 'sellerSales';
   static const String sellerProductCreate = 'sellerProductCreate';
   static const String sellerProductEdit = 'sellerProductEdit';
   static const String adminHome = 'adminHome';

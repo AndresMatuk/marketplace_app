@@ -6,6 +6,7 @@ class SellerStrings {
   static const String sellerHomeSubtitle =
       'Gestiona tus productos desde aquí';
   static const String myProducts = 'Mis productos';
+  static const String mySales = 'Mis ventas';
   static const String createProduct = 'Crear producto';
   static const String productsTitle = 'Mis productos';
   static const String productsEmpty = 'Aún no tienes productos';
@@ -32,4 +33,8 @@ class SellerStrings {
   static const String stockLabel = 'Stock';
   static const String active = 'Activo';
   static const String inactive = 'Inactivo';
+  static const String salesTitle = 'Mis ventas';
+  static const String salesEmpty = 'Aún no tienes ventas';
+  static const String saleDate = 'Fecha';
+  static const String saleProducts = 'Productos';
 }

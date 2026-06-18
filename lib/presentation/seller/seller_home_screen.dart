@@ -11,10 +11,12 @@ class SellerHomeScreen extends ConsumerWidget {
   const SellerHomeScreen({
     super.key,
     this.onMyProductsTap,
+    this.onMySalesTap,
     this.onCreateProductTap,
   });
 
   final VoidCallback? onMyProductsTap;
+  final VoidCallback? onMySalesTap;
   final VoidCallback? onCreateProductTap;
 
   @override
@@ -65,6 +67,12 @@ class SellerHomeScreen extends ConsumerWidget {
                 onPressed: onMyProductsTap,
                 icon: const Icon(Icons.inventory_2_outlined),
                 label: const Text(SellerStrings.myProducts),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.tonalIcon(
+                onPressed: onMySalesTap,
+                icon: const Icon(Icons.people_outline),
+                label: const Text(SellerStrings.mySales),
               ),
               const SizedBox(height: 16),
               OutlinedButton.icon(

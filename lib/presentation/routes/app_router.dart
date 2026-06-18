@@ -21,6 +21,7 @@ import '../providers/cart_provider.dart';
 import '../seller/seller_home_screen.dart';
 import '../seller/seller_product_form_screen.dart';
 import '../seller/seller_products_screen.dart';
+import '../seller/seller_sales_screen.dart';
 import '../splash/splash_screen.dart';
 import 'auth_guard.dart';
 import 'role_guard.dart';
@@ -194,8 +195,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => SellerHomeScreen(
           onMyProductsTap: () =>
               context.pushNamed(RouteNames.sellerProducts),
+          onMySalesTap: () => context.pushNamed(RouteNames.sellerSales),
           onCreateProductTap: () =>
               context.pushNamed(RouteNames.sellerProductCreate),
+        ),
+      ),
+      GoRoute(
+        path: RoutePaths.sellerSales,
+        name: RouteNames.sellerSales,
+        builder: (context, state) => SellerSalesScreen(
+          onHomeTap: () => context.goNamed(RouteNames.sellerHome),
         ),
       ),
       GoRoute(

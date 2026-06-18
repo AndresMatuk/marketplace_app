@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/errors/order_exception.dart';
 import '../../domain/entities/create_order_line.dart';
 import '../../domain/entities/order_status.dart';
+import '../../domain/entities/seller_sale.dart';
+import '../datasources/auth_remote_datasource.dart';
 import '../datasources/product_remote_datasource.dart';
 import '../models/order_model.dart';
 
@@ -17,6 +19,8 @@ class OrderRemoteDataSource {
 
   Future<OrderModel> createOrder({
     required String customerId,
+    required String customerName,
+    required String customerEmail,
     required List<CreateOrderLine> lines,
   }) async {
     return firestore.runTransaction((transaction) async {
@@ -71,9 +75,13 @@ class OrderRemoteDataSource {
       }
 
       final orderRef = firestore.collection(ordersCollection).doc();
+      final sellerIds = orderItems.map((item) => item.sellerId).toSet().toList();
       final orderModel = OrderModel(
         id: orderRef.id,
         customerId: customerId,
+        customerName: customerName,
+        customerEmail: customerEmail,
+        sellerIds: sellerIds,
         items: orderItems,
         subtotal: subtotal,
         total: subtotal,
@@ -101,6 +109,62 @@ class OrderRemoteDataSource {
           ),
         )
         .toList();
+  }
+
+  Future<List<SellerSale>> getSellerSales(String sellerId) async {
+    final snapshot = await firestore
+        .collection(ordersCollection)
+        .where('sellerIds', arrayContains: sellerId)
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    final orders = snapshot.docs
+        .map(
+          (doc) => OrderModel.fromMap(
+            id: doc.id,
+            map: doc.data(),
+          ),
+        )
+        .toList();
+
+    final sales = <SellerSale>[];
+
+    for (final order in orders) {
+      final sellerItems = order.items
+          .where((item) => item.sellerId == sellerId)
+          .map((item) => item.toEntity())
+          .toList();
+
+      if (sellerItems.isEmpty) continue;
+
+      var buyerName = order.customerName;
+      var buyerEmail = order.customerEmail;
+
+      if (buyerName.isEmpty && order.customerId.isNotEmpty) {
+        final userDoc = await firestore
+            .collection(AuthRemoteDataSource.usersCollection)
+            .doc(order.customerId)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          buyerName = userDoc.data()!['name'] as String? ?? '';
+          buyerEmail = userDoc.data()!['email'] as String? ?? buyerEmail;
+        }
+      }
+
+      sales.add(
+        SellerSale(
+          orderId: order.id,
+          buyerName: buyerName.isNotEmpty ? buyerName : 'Cliente',
+          buyerEmail: buyerEmail,
+          createdAt: order.createdAt?.toDate() ?? DateTime.now(),
+          items: sellerItems,
+          total: sellerItems.fold(0, (sum, item) => sum + item.lineTotal),
+        ),
+      );
+    }
+
+    return sales;
   }
 
   Future<OrderModel?> getOrderById(String id) async {

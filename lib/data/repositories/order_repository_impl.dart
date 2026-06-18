@@ -1,5 +1,6 @@
 import '../../domain/entities/create_order_line.dart';
 import '../../domain/entities/order.dart';
+import '../../domain/entities/seller_sale.dart';
 import '../../domain/repositories/order_repository.dart';
 import '../datasources/order_remote_datasource.dart';
 
@@ -13,10 +14,14 @@ class OrderRepositoryImpl implements OrderRepository {
   @override
   Future<Order> createOrder({
     required String customerId,
+    required String customerName,
+    required String customerEmail,
     required List<CreateOrderLine> lines,
   }) async {
     final order = await remoteDataSource.createOrder(
       customerId: customerId,
+      customerName: customerName,
+      customerEmail: customerEmail,
       lines: lines,
     );
 
@@ -29,6 +34,13 @@ class OrderRepositoryImpl implements OrderRepository {
   }) async {
     final orders = await remoteDataSource.getCustomerOrders(customerId);
     return orders.map((order) => order.toEntity()).toList();
+  }
+
+  @override
+  Future<List<SellerSale>> getSellerSales({
+    required String sellerId,
+  }) {
+    return remoteDataSource.getSellerSales(sellerId);
   }
 
   @override
