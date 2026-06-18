@@ -1,43 +1,26 @@
 {
   "project_info": {
-    "project_number": "2037911947",
-    "project_id": "marketplace-app-a9156",
-    "storage_bucket": "marketplace-app-a9156.firebasestorage.app"
+    "project_number": "1069483869025",
+    "project_id": "marketplace-app-v2-c03a2",
+    "storage_bucket": "marketplace-app-v2-c03a2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:2037911947:android:e2526df318094f0bb2df8e",
+        "mobilesdk_app_id": "1:1069483869025:android:2e4027867a13db1a843b20",
         "android_client_info": {
           "package_name": "com.example.marketplace_app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "2037911947-5bvhbt1i1p5upf022graa2bcgfvbomaf.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAZWesXAiuRV07H3OtVoTuU27SGXt4IqHQ"
+          "current_key": "AIzaSyCBzMEjyXZUIFGac_1-mA0nbCVB6nJXtZ0"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "2037911947-5bvhbt1i1p5upf022graa2bcgfvbomaf.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "2037911947-odakcef9cb6tgrbt4psrqvbknbjd2d1v.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.marketplaceApp"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
