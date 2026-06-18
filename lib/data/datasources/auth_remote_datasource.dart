@@ -83,6 +83,12 @@ class AuthRemoteDataSource {
     final doc = await firestore.collection(usersCollection).doc(uid).get();
 
     debugPrint(
+      '[Firestore] getUserDocument '
+      'fromCache=${doc.metadata.isFromCache} '
+      'pendingWrites=${doc.metadata.hasPendingWrites}',
+    );
+
+    debugPrint(
       '[AuthRemoteDataSource] getUserDocument AFTER get | uid=$uid '
       'exists=${doc.exists} data=${doc.data()}',
     );
@@ -96,8 +102,8 @@ class AuthRemoteDataSource {
 
   Future<void> createUserDocument(UserModel user) async {
     debugPrint(
-      '[AuthRemoteDataSource] createUserDocument BEFORE set | '
-      'uid=${user.uid} email=${user.email}',
+      '[AuthRemoteDataSource] createUserDocument BEFORE set '
+      '| uid=${user.uid} email=${user.email}',
     );
 
     try {
@@ -107,13 +113,18 @@ class AuthRemoteDataSource {
           .set(user.toMap());
 
       debugPrint(
-        '[AuthRemoteDataSource] createUserDocument AFTER set | uid=${user.uid}',
+        '[AuthRemoteDataSource] createUserDocument SUCCESS '
+        '| uid=${user.uid}',
       );
     } catch (error, stackTrace) {
       debugPrint(
-        '[AuthRemoteDataSource] createUserDocument ERROR | '
-        'error=$error runtimeType=${error.runtimeType} stackTrace=$stackTrace',
+        '[AuthRemoteDataSource] createUserDocument ERROR '
+        '| type=${error.runtimeType}',
       );
+
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
+
       rethrow;
     }
   }
