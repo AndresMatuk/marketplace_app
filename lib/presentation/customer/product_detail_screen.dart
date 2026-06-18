@@ -45,7 +45,7 @@ class ProductDetailScreen extends ConsumerWidget {
       ),
       body: detailAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
+        error: (_, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -92,7 +92,7 @@ class ProductDetailScreen extends ConsumerWidget {
                                   ? CachedNetworkImage(
                                       imageUrl: product.imageUrl,
                                       fit: BoxFit.cover,
-                                      errorWidget: (_, __, ___) => ColoredBox(
+                                      errorWidget: (_, _, _) => ColoredBox(
                                         color:
                                             colorScheme.surfaceContainerHighest,
                                         child: const Icon(

@@ -34,7 +34,7 @@ class OrdersScreen extends ConsumerWidget {
       ),
       body: ordersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
+        error: (_, _) => Center(
           child: FilledButton(
             onPressed: () =>
                 ref.read(customerOrdersProvider.notifier).refresh(),
@@ -68,7 +68,7 @@ class OrdersScreen extends ConsumerWidget {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: orders.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final order = orders[index];
                 return _OrderCard(

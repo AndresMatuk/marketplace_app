@@ -300,7 +300,7 @@ class _SellerProductFormScreenState
                       child: CachedNetworkImage(
                         imageUrl: _imageUrlController.text.trim(),
                         fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => ColoredBox(
+                        errorWidget: (_, _, _) => ColoredBox(
                           color: Theme.of(context)
                               .colorScheme
                               .surfaceContainerHighest,

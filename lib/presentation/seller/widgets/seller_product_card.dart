@@ -39,7 +39,7 @@ class SellerProductCard extends StatelessWidget {
                     ? CachedNetworkImage(
                         imageUrl: product.imageUrl,
                         fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => const Icon(
+                        errorWidget: (_, _, _) => const Icon(
                           Icons.broken_image_outlined,
                         ),
                       )

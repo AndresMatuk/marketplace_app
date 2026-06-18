@@ -34,7 +34,7 @@ class ProductCatalogCard extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: product.imageUrl,
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => ColoredBox(
+                      errorWidget: (_, _, _) => ColoredBox(
                         color: colorScheme.surfaceContainerHighest,
                         child: const Icon(Icons.broken_image_outlined),
                       ),

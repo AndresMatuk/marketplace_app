@@ -37,7 +37,7 @@ class OrderDetailScreen extends ConsumerWidget {
       ),
       body: orderAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
+        error: (_, _) => Center(
           child: FilledButton(
             onPressed: () =>
                 ref.read(orderDetailProvider(orderId).notifier).refresh(),

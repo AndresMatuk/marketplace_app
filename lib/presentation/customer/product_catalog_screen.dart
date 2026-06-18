@@ -132,7 +132,7 @@ class _ProductCatalogScreenState extends ConsumerState<ProductCatalogScreen> {
             child: catalogAsync.when(
               loading: () =>
                   const Center(child: CircularProgressIndicator()),
-              error: (_, __) => _ErrorView(onRetry: _onRefresh),
+              error: (_, _) => _ErrorView(onRetry: _onRefresh),
               data: (products) {
                 final filtered = _filterProducts(products);
 
