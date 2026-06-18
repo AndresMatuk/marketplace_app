@@ -81,7 +81,10 @@ class AuthRemoteDataSource {
     );
 
     final doc = await firestore.collection(usersCollection).doc(uid).get();
-
+    print(
+      '[Firestore] fromCache=${doc.metadata.isFromCache} '
+      'pendingWrites=${doc.metadata.hasPendingWrites}',
+    );
     debugPrint(
       '[Firestore] getUserDocument '
       'fromCache=${doc.metadata.isFromCache} '
