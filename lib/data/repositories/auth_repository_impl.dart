@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -59,20 +60,41 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) async {
+    debugPrint(
+      '[AuthRepositoryImpl] signUp BEFORE createUserWithEmailAndPassword | '
+      'email=$email',
+    );
+
     final credential = await remoteDataSource.signUp(
       email: email,
       password: password,
     );
 
     final firebaseUser = credential.user;
+
+    debugPrint(
+      '[AuthRepositoryImpl] signUp AFTER createUserWithEmailAndPassword | '
+      'uid=${firebaseUser?.uid} email=${firebaseUser?.email ?? email}',
+    );
+
     if (firebaseUser == null) {
       throw StateError('Firebase Auth no retornó un usuario tras el registro.');
     }
 
     try {
+      debugPrint(
+        '[AuthRepositoryImpl] signUp BEFORE updateDisplayName | '
+        'uid=${firebaseUser.uid} email=${firebaseUser.email}',
+      );
+
       await remoteDataSource.updateDisplayName(
         user: firebaseUser,
         name: name,
+      );
+
+      debugPrint(
+        '[AuthRepositoryImpl] signUp AFTER updateDisplayName | '
+        'uid=${firebaseUser.uid}',
       );
 
       final userModel = UserModel(
@@ -83,10 +105,43 @@ class AuthRepositoryImpl implements AuthRepository {
         photoUrl: '',
       );
 
+      debugPrint(
+        '[AuthRepositoryImpl] signUp BEFORE createUserDocument | '
+        'uid=${firebaseUser.uid} email=${userModel.email}',
+      );
+
       await remoteDataSource.createUserDocument(userModel);
-    } catch (error) {
-      await remoteDataSource.deleteUser(firebaseUser);
-      rethrow;
+
+      debugPrint(
+        '[AuthRepositoryImpl] signUp AFTER createUserDocument | '
+        'uid=${firebaseUser.uid}',
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[AuthRepositoryImpl] signUp ERROR before rollback | '
+        'uid=${firebaseUser.uid} email=${firebaseUser.email} '
+        'error=$error stackTrace=$stackTrace',
+      );
+
+      debugPrint(
+        '[AuthRepositoryImpl] signUp BEFORE deleteUser | uid=${firebaseUser.uid}',
+      );
+
+      try {
+        await remoteDataSource.deleteUser(firebaseUser);
+
+        debugPrint(
+          '[AuthRepositoryImpl] signUp AFTER deleteUser | uid=${firebaseUser.uid}',
+        );
+      } catch (rollbackError, rollbackStackTrace) {
+        debugPrint(
+          '[AuthRepositoryImpl] signUp rollback deleteUser FAILED | '
+          'uid=${firebaseUser.uid} rollbackError=$rollbackError '
+          'rollbackStackTrace=$rollbackStackTrace',
+        );
+      }
+
+      Error.throwWithStackTrace(error, stackTrace);
     }
   }
 

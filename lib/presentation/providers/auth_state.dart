@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/app_user.dart';
@@ -125,7 +126,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else {
         state = const AuthUnauthenticated();
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[AuthNotifier] signUp ERROR | error=$error '
+        'runtimeType=${error.runtimeType} stackTrace=$stackTrace',
+      );
+
       state = AuthError(
         message: AuthErrorMapper.map(error),
         previous: const AuthUnauthenticated(),

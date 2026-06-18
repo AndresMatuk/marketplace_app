@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
 
@@ -75,7 +76,16 @@ class AuthRemoteDataSource {
   // ---------------------------------------------------------------------------
 
   Future<UserModel?> getUserDocument(String uid) async {
+    debugPrint(
+      '[AuthRemoteDataSource] getUserDocument BEFORE get | uid=$uid',
+    );
+
     final doc = await firestore.collection(usersCollection).doc(uid).get();
+
+    debugPrint(
+      '[AuthRemoteDataSource] getUserDocument AFTER get | uid=$uid '
+      'exists=${doc.exists} data=${doc.data()}',
+    );
 
     if (!doc.exists || doc.data() == null) {
       return null;
@@ -84,10 +94,27 @@ class AuthRemoteDataSource {
     return UserModel.fromMap(doc.data()!);
   }
 
-  Future<void> createUserDocument(UserModel user) {
-    return firestore
-        .collection(usersCollection)
-        .doc(user.uid)
-        .set(user.toMap());
+  Future<void> createUserDocument(UserModel user) async {
+    debugPrint(
+      '[AuthRemoteDataSource] createUserDocument BEFORE set | '
+      'uid=${user.uid} email=${user.email}',
+    );
+
+    try {
+      await firestore
+          .collection(usersCollection)
+          .doc(user.uid)
+          .set(user.toMap());
+
+      debugPrint(
+        '[AuthRemoteDataSource] createUserDocument AFTER set | uid=${user.uid}',
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[AuthRemoteDataSource] createUserDocument ERROR | '
+        'error=$error runtimeType=${error.runtimeType} stackTrace=$stackTrace',
+      );
+      rethrow;
+    }
   }
 }
