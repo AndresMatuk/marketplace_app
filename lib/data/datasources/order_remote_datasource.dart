@@ -159,7 +159,10 @@ class OrderRemoteDataSource {
           buyerEmail: buyerEmail,
           createdAt: order.createdAt?.toDate() ?? DateTime.now(),
           items: sellerItems,
-          total: sellerItems.fold(0, (sum, item) => sum + item.lineTotal),
+          total: sellerItems.fold(
+            0,
+            (lineTotal, item) => lineTotal + item.lineTotal,
+          ),
         ),
       );
     }
