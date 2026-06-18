@@ -51,7 +51,7 @@ class CheckoutError extends CheckoutState {
   final CheckoutSummary? summary;
 }
 
-class CheckoutNotifier extends Notifier<CheckoutState> {
+class CheckoutNotifier extends AutoDisposeNotifier<CheckoutState> {
   @override
   CheckoutState build() => const CheckoutInitial();
 

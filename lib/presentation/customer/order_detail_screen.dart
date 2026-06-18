@@ -112,8 +112,9 @@ class _OrderItemTile extends StatelessWidget {
                         imageUrl: item.imageUrl,
                         fit: BoxFit.cover,
                       )
-                    : const ColoredBox(
-                        child: Icon(Icons.image_outlined),
+                    : ColoredBox(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        child: const Icon(Icons.image_outlined),
                       ),
               ),
             ),

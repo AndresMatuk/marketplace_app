@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/product_categories.dart';
+import '../../domain/entities/product.dart';
 import '../../core/constants/seller_strings.dart';
 import '../../core/utils/product_validators.dart';
 import '../../core/utils/responsive.dart';
