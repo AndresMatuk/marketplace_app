@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'firebase_options.dart';
-import 'presentation/providers/auth_provider.dart';
 import 'presentation/routes/app_router.dart';
 
 Future<void> main() async {

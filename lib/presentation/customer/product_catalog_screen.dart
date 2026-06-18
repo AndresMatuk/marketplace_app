@@ -104,7 +104,7 @@ class _ProductCatalogScreenState extends ConsumerState<ProductCatalogScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<ProductCategory?>(
-                  value: _selectedCategory,
+                  initialValue: _selectedCategory,
                   decoration: const InputDecoration(
                     labelText: CustomerStrings.category,
                     border: OutlineInputBorder(),

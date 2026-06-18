@@ -257,7 +257,7 @@ class _SellerProductFormScreenState
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<ProductCategory>(
-                  value: _selectedCategory,
+                  initialValue: _selectedCategory,
                   decoration: const InputDecoration(
                     labelText: SellerStrings.productCategory,
                     border: OutlineInputBorder(),

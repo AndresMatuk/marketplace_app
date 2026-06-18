@@ -22,7 +22,6 @@ class CartScreen extends ConsumerWidget {
     final cart = ref.watch(cartProvider);
     final subtotal = ref.watch(cartSubtotalProvider);
     final total = ref.watch(cartTotalProvider);
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
