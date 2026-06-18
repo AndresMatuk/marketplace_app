@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 import '../models/user_model.dart';
@@ -109,6 +110,18 @@ class AuthRemoteDataSource {
       '| uid=${user.uid} email=${user.email}',
     );
 
+    debugPrint(
+      '[FirestoreDebug] projectId=${Firebase.app().options.projectId}',
+    );
+    debugPrint('[FirestoreDebug] appName=${Firebase.app().name}');
+    debugPrint(
+      '[FirestoreDebug] firestoreProjectId='
+      '${firestore.app.options.projectId}',
+    );
+    debugPrint('[FirestoreDebug] databaseId=${firestore.databaseId}');
+    debugPrint('[FirestoreDebug] collection=$usersCollection');
+    debugPrint('[FirestoreDebug] uid=${user.uid}');
+
     try {
       await firestore
           .collection(usersCollection)
@@ -120,10 +133,16 @@ class AuthRemoteDataSource {
         '| uid=${user.uid}',
       );
     } catch (error, stackTrace) {
-      debugPrint(
-        '[AuthRemoteDataSource] createUserDocument ERROR '
-        '| type=${error.runtimeType}',
-      );
+      debugPrint('[FirestoreDebug] SET FAILED');
+      debugPrint('runtimeType=${error.runtimeType}');
+
+      if (error is FirebaseException) {
+        debugPrint('code=${error.code}');
+        debugPrint('message=${error.message}');
+      } else {
+        debugPrint('code=');
+        debugPrint('message=$error');
+      }
 
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
