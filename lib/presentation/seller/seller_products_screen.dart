@@ -109,7 +109,10 @@ class _SellerProductsScreenState extends ConsumerState<SellerProductsScreen> {
       ),
       body: productsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => _ErrorView(onRetry: _onRefresh),
+        error: (error, _) => _ErrorView(
+          message: error.toString(),
+          onRetry: _onRefresh,
+        ),
         data: (products) {
           if (products.isEmpty) {
             return _EmptyView(onCreateTap: widget.onCreateProductTap);
@@ -178,8 +181,12 @@ class _EmptyView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.onRetry});
+  const _ErrorView({
+    required this.message,
+    required this.onRetry,
+  });
 
+  final String message;
   final VoidCallback onRetry;
 
   @override
@@ -199,8 +206,10 @@ class _ErrorView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              SellerStrings.productsError,
-              style: theme.textTheme.titleMedium,
+              message,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.error,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),

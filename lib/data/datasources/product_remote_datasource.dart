@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/product_model.dart';
 
@@ -42,20 +44,33 @@ class ProductRemoteDataSource {
   }
 
   Future<List<ProductModel>> getSellerProducts(String sellerId) async {
-    final snapshot = await firestore
-        .collection(productsCollection)
-        .where('sellerId', isEqualTo: sellerId)
-        .orderBy('createdAt', descending: true)
-        .get();
+    debugPrint(
+      '[ProductRemoteDataSource] getSellerProducts '
+      'collection=$productsCollection sellerId=$sellerId',
+    );
 
-    return snapshot.docs
-        .map(
-          (doc) => ProductModel.fromMap(
-            id: doc.id,
-            map: doc.data(),
-          ),
-        )
-        .toList();
+    try {
+      final snapshot = await firestore
+          .collection(productsCollection)
+          .where('sellerId', isEqualTo: sellerId)
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      return snapshot.docs
+          .map(
+            (doc) => ProductModel.fromMap(
+              id: doc.id,
+              map: doc.data(),
+            ),
+          )
+          .toList();
+    } on FirebaseException catch (error) {
+      debugPrint(
+        '[ProductRemoteDataSource] getSellerProducts FirebaseException '
+        'code=${error.code} message=${error.message}',
+      );
+      rethrow;
+    }
   }
 
   Future<List<ProductModel>> getActiveProducts() async {

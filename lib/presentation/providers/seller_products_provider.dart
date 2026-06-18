@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/product.dart';
@@ -10,8 +11,16 @@ class SellerProductsNotifier extends AsyncNotifier<List<Product>> {
     final user = ref.watch(currentUserProvider);
     if (user == null) return [];
 
-    final repository = ref.watch(productRepositoryProvider);
-    return repository.getSellerProducts(sellerId: user.uid);
+    try {
+      final repository = ref.watch(productRepositoryProvider);
+      return await repository.getSellerProducts(sellerId: user.uid);
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[SellerProductsNotifier] build ERROR | error=$error '
+        'runtimeType=${error.runtimeType} stackTrace=$stackTrace',
+      );
+      rethrow;
+    }
   }
 
   Future<void> refresh() async {
@@ -26,6 +35,13 @@ class SellerProductsNotifier extends AsyncNotifier<List<Product>> {
       final repository = ref.read(productRepositoryProvider);
       return repository.getSellerProducts(sellerId: user.uid);
     });
+
+    if (state.hasError) {
+      debugPrint(
+        '[SellerProductsNotifier] refresh ERROR | error=${state.error} '
+        'runtimeType=${state.error?.runtimeType} stackTrace=${state.stackTrace}',
+      );
+    }
   }
 
   void prependProduct(Product product) {
